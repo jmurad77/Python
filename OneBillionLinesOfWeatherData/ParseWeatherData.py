@@ -42,6 +42,7 @@ while line:
 
 	if city in weatherDict.keys():
 		# do avg
+		# Data format 0 : min, 1 : total, 2 : max, 3 : count
 		pastResults = weatherDict[city]
 
 		# if current min is less, than replace old min
