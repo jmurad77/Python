@@ -18,45 +18,47 @@ def main():
     while True:
         raw_data, addr = conn.recvfrom(65536)
         dest_mac, src_mac, eth_proto, data = ethernet_frame(raw_data)
-        print('\nEthernet Frame:')
-        print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac,src_mac,eth_proto))
+        printst('\nEthernet Frame:')
+        printst(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac,src_mac,eth_proto))
         
         # 8 for IPv4
         if eth_proto == 8:
             (version, header_length, ttl, proto, src, target, data) = ipv4_packet(data)
-            print(TAB_1 + 'IPV4 Packet:')
-            print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
-            print(TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
+            printst(TAB_1 + 'IPV4 Packet:')
+            printst(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
+            printst(TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
             
             # ICMP
             if proto == 1:
                 icmp_type, code, checksum, data = icmp_packet(data)
-                print(TAB_1 + 'ICMP Packet:')
-                print(TAB_2 + 'Type: {}, Code: {}, Checksum: {}'.format(icmp_type, code, checksum))
-                print(TAB_2 + 'Data:')
-                print(format_mult_line(DATA_TAB_3, data))
+                printst(TAB_1 + 'ICMP Packet:')
+                printst(TAB_2 + 'Type: {}, Code: {}, Checksum: {}'.format(icmp_type, code, checksum))
+                printst(TAB_2 + 'Data:')
+                printst(format_mult_line(DATA_TAB_3, data))
                 
             # TCP
             elif proto == 6:
                 src_port, dest_port, sequence, ack, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data = tcp_segment(data)
-                print(TAB_1 + 'TCP Segment')
-                print(TAB_2 + 'Source Port: {}, Dest Port: {}'.format(src_port, dest_port))
-                print(TAB_2 + 'Sequence: {}, Ack: {}'.format(sequence, ack))
-                print(TAB_2 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
-                print(TAB_2 + 'Data:')
-                print(format_mult_line(DATA_TAB_3, data))
+                printst(TAB_1 + 'TCP Segment')
+                printst(TAB_2 + 'Source Port: {}, Dest Port: {}'.format(src_port, dest_port))
+                printst(TAB_2 + 'Sequence: {}, Ack: {}'.format(sequence, ack))
+                printst(TAB_2 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
+                printst(TAB_2 + 'Data Length: {}, Data:'.format(len(data)))
+                printst(format_mult_line(DATA_TAB_3, data))
+                
             # UDP
             elif proto == 17:
                 src_port, dest_port, size, data = udp_segment(data)
-                print(TAB_1 + 'UDP Segment')
-                print(TAB_2 + 'Source Port: {}, Dest Port: {}, Length: {}'.format(src_port, dest_port, size))
-                print(format_mult_line(DATA_TAB_3, data))
+                printst(TAB_1 + 'UDP Segment')
+                printst(TAB_2 + 'Source Port: {}, Dest Port: {}, Length: {}'.format(src_port, dest_port, size))
+                printst(TAB_2 + 'Data:')
+                printst(format_mult_line(DATA_TAB_3, data))
                 
                 
             # OTHER
             else:
-                print(TAB_1 + 'Data:')
-                print(format_mult_line(DATA_TAB_2, data))
+                printst(TAB_1 + 'Data:')
+                printst(format_mult_line(DATA_TAB_2, data))
             
 
 # unpack ethernet frame
@@ -110,5 +112,11 @@ def format_mult_line(prefix, string, size=80):
         if size % 2:
             size -= 1
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
+
+def printst(msg):
+    print(msg)
+    with open("Ethernet_Log.txt", "a") as f:
+        f.write(msg + '\n')
+    
 
 main()
